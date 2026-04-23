@@ -9,7 +9,7 @@
       "_type": "workspace",
       "parentId": null,
       "name": "ai-yuntu / production-debug",
-      "description": "Trigger the ai-yuntu managed agent (production-express) on Anthropic's hosted service.",
+      "description": "Two-step trigger for the ai-yuntu managed agent: create a session, then send the debug prompt as a user.message event.",
       "scope": "collection"
     },
     {
@@ -20,33 +20,65 @@
       "data": {
         "anthropic_api_key": "sk-ant-REPLACE_ME",
         "agent_id": "agent_REPLACE_ME",
+        "environment_id": "env_REPLACE_ME",
+        "session_id": "paste_after_step_1",
         "trace_id": "REPLACE_ME_TRACE_ID",
-        "app_name": "REPLACE_ME_APP_NAME"
+        "app_name": "REPLACE_ME_APP_NAME",
+        "output_type": "basic"
       },
       "dataPropertyOrder": {
-        "&": ["anthropic_api_key", "agent_id", "trace_id", "app_name"]
+        "&": ["anthropic_api_key", "agent_id", "environment_id", "session_id", "trace_id", "app_name", "output_type"]
       },
       "color": null,
       "isPrivate": false,
       "metaSortKey": 1
     },
     {
-      "_id": "req_create_session",
+      "_id": "req_1_create_session",
       "_type": "request",
       "parentId": "wrk_ai_yuntu_debug",
-      "name": "POST /v1/sessions — trigger ai-yuntu",
-      "description": "Creates a managed-agent session. The agent (agent_id) must already be configured in the Anthropic Console with the production-debug prompt template using {{trace_id}} / {{app_name}} placeholders.",
+      "name": "1. POST /v1/sessions — create session",
+      "description": "Creates an idle managed-agent session. Copy the returned `id` into the `session_id` environment variable for step 2.",
       "url": "https://api.anthropic.com/v1/sessions",
       "method": "POST",
       "body": {
         "mimeType": "application/json",
-        "text": "{\n  \"agent_id\": \"{{ _.agent_id }}\",\n  \"initial_message\": {\n    \"role\": \"user\",\n    \"content\": \"Debug this production issue.\\ntraceId: {{ '{{' }}trace_id{{ '}}' }}\\nappName: {{ '{{' }}app_name{{ '}}' }}\\noutputType: basic\"\n  },\n  \"prompt_variables\": {\n    \"trace_id\": \"{{ _.trace_id }}\",\n    \"app_name\": \"{{ _.app_name }}\"\n  }\n}"
+        "text": "{\n  \"agent\": \"{{ _.agent_id }}\",\n  \"environment_id\": \"{{ _.environment_id }}\"\n}"
       },
       "headers": [
         { "name": "Content-Type", "value": "application/json" },
         { "name": "anthropic-version", "value": "2023-06-01" },
         { "name": "anthropic-beta", "value": "managed-agents-2026-04-01" },
-        { "name": "X-Api-Key", "value": "{{ _.anthropic_api_key }}" }
+        { "name": "x-api-key", "value": "{{ _.anthropic_api_key }}" }
+      ],
+      "parameters": [],
+      "authentication": {},
+      "metaSortKey": -2000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global"
+    },
+    {
+      "_id": "req_2_send_prompt",
+      "_type": "request",
+      "parentId": "wrk_ai_yuntu_debug",
+      "name": "2. POST /v1/sessions/{id}/events — send debug prompt",
+      "description": "Sends the production-express debug prompt as a user.message event. The API does not support template variables, so trace_id / app_name are baked directly into the text at render time via Insomnia env vars.",
+      "url": "https://api.anthropic.com/v1/sessions/{{ _.session_id }}/events",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"events\": [\n    {\n      \"type\": \"user.message\",\n      \"content\": [\n        {\n          \"type\": \"text\",\n          \"text\": \"Debug this production issue.\\ntraceId: {{ _.trace_id }}\\nappName: {{ _.app_name }}\\noutputType: {{ _.output_type }}\"\n        }\n      ]\n    }\n  ]\n}"
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "anthropic-version", "value": "2023-06-01" },
+        { "name": "anthropic-beta", "value": "managed-agents-2026-04-01" },
+        { "name": "x-api-key", "value": "{{ _.anthropic_api_key }}" }
       ],
       "parameters": [],
       "authentication": {},
