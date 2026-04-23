@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash",
+      "Read",
+      "Edit",
+      "Write",
+      "Glob",
+      "Grep",
+      "WebFetch",
+      "WebSearch",
+      "Skill",
+      "Agent",
+      "NotebookEdit",
+      "mcp__antlog__getTimeRangeOfTraceId",
+      "mcp__antlog__queryAppLogContentByTraceId",
+      "mcp__antlog__queryAppLogContent",
+      "mcp__antlog__listAppLogPath",
+      "mcp__antlog__listLogstores",
+      "mcp__antlog__listRegions",
+      "mcp__antlog__queryProjectLogstoreContent",
+      "mcp__yuntu__queryYuntuTraceTree",
+      "mcp__yuntu__queryYuntuTraceList",
+      "mcp__yuntu__identifyYuntuTraceEnv",
+      "mcp__yuntu__executeTraceDiagnosis",
+      "mcp__yuntu__executeRpcDiagnosis",
+      "mcp__yuque-mcp",
+      "mcp__proxySofaDoc"
+    ],
+    "defaultMode": "bypassPermissions"
+  },
+  "enabledMcpjsonServers": [
+    "antlog",
+    "yuntu"
+  ]
+}
