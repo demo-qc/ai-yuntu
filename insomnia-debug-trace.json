@@ -1,0 +1,61 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-04-23T00:00:00.000Z",
+  "__export_source": "ai-yuntu.debug-trace",
+  "resources": [
+    {
+      "_id": "wrk_ai_yuntu_debug",
+      "_type": "workspace",
+      "parentId": null,
+      "name": "ai-yuntu / production-debug",
+      "description": "Trigger the production-express debug routine via local HTTP wrapper.",
+      "scope": "collection"
+    },
+    {
+      "_id": "env_base",
+      "_type": "environment",
+      "parentId": "wrk_ai_yuntu_debug",
+      "name": "Base Environment",
+      "data": {
+        "base_url": "http://localhost:8000",
+        "trace_id": "REPLACE_ME_TRACE_ID",
+        "app_name": "REPLACE_ME_APP_NAME",
+        "output_type": "basic"
+      },
+      "dataPropertyOrder": {
+        "&": ["base_url", "trace_id", "app_name", "output_type"]
+      },
+      "color": null,
+      "isPrivate": false,
+      "metaSortKey": 1
+    },
+    {
+      "_id": "req_debug_trace",
+      "_type": "request",
+      "parentId": "wrk_ai_yuntu_debug",
+      "name": "POST /debug — run production-express",
+      "description": "Kicks off the production-express skill for the given trace. Streams Claude Code events back as newline-delimited JSON.",
+      "url": "{{ _.base_url }}/debug",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"trace_id\": \"{{ _.trace_id }}\",\n  \"app_name\": \"{{ _.app_name }}\",\n  \"output_type\": \"{{ _.output_type }}\"\n}"
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/x-ndjson" }
+      ],
+      "parameters": [],
+      "authentication": {},
+      "metaSortKey": -1000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global"
+    }
+  ]
+}
