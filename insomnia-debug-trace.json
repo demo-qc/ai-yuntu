@@ -1,0 +1,63 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-04-23T00:00:00.000Z",
+  "__export_source": "ai-yuntu.debug-trace",
+  "resources": [
+    {
+      "_id": "wrk_ai_yuntu_debug",
+      "_type": "workspace",
+      "parentId": null,
+      "name": "ai-yuntu / production-debug",
+      "description": "Trigger the ai-yuntu managed agent (production-express) on Anthropic's hosted service.",
+      "scope": "collection"
+    },
+    {
+      "_id": "env_base",
+      "_type": "environment",
+      "parentId": "wrk_ai_yuntu_debug",
+      "name": "Base Environment",
+      "data": {
+        "anthropic_api_key": "sk-ant-REPLACE_ME",
+        "agent_id": "agent_REPLACE_ME",
+        "trace_id": "REPLACE_ME_TRACE_ID",
+        "app_name": "REPLACE_ME_APP_NAME"
+      },
+      "dataPropertyOrder": {
+        "&": ["anthropic_api_key", "agent_id", "trace_id", "app_name"]
+      },
+      "color": null,
+      "isPrivate": false,
+      "metaSortKey": 1
+    },
+    {
+      "_id": "req_create_session",
+      "_type": "request",
+      "parentId": "wrk_ai_yuntu_debug",
+      "name": "POST /v1/sessions — trigger ai-yuntu",
+      "description": "Creates a managed-agent session. The agent (agent_id) must already be configured in the Anthropic Console with the production-debug prompt template using {{trace_id}} / {{app_name}} placeholders.",
+      "url": "https://api.anthropic.com/v1/sessions",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"agent_id\": \"{{ _.agent_id }}\",\n  \"initial_message\": {\n    \"role\": \"user\",\n    \"content\": \"Debug this production issue.\\ntraceId: {{ '{{' }}trace_id{{ '}}' }}\\nappName: {{ '{{' }}app_name{{ '}}' }}\\noutputType: basic\"\n  },\n  \"prompt_variables\": {\n    \"trace_id\": \"{{ _.trace_id }}\",\n    \"app_name\": \"{{ _.app_name }}\"\n  }\n}"
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "anthropic-version", "value": "2023-06-01" },
+        { "name": "anthropic-beta", "value": "managed-agents-2026-04-01" },
+        { "name": "X-Api-Key", "value": "{{ _.anthropic_api_key }}" }
+      ],
+      "parameters": [],
+      "authentication": {},
+      "metaSortKey": -1000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global"
+    }
+  ]
+}
